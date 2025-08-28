@@ -1,1 +1,1 @@
-# mattermost-utilities
+Python code for accessing Mattermost channels
