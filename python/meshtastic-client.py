@@ -1,6 +1,6 @@
 import meshtastic.tcp_interface as tcp
 from mattermostdriver import Driver
-from pubsub import pub
+from pubsub import pub  # https://pypubsub.readthedocs.io/en/v4.0.3/
 import logging
 import os
 import argparse
@@ -56,20 +56,16 @@ DEFAULT_CFG = "/etc/meshtastic-client/config.json"
 #     "type": "text",
 # }
 
-HOSTNAME = "w6ei-southcourt-meshtastic.local.mesh"
-
 
 class MeshtasticClient:
-    def __init__(self, hostname, callback, logger):
-        self.hostname = hostname
+    def __init__(self, host, callback, logger):
+        self.host = host
         self.callback = callback
         self.logger = logger
         self.interface = None
         # Establish a connection to the Meshtastic device
         try:
-            self.interface = tcp.TCPInterface(
-                hostname=self.hostname, portNumber=4403, connectNow=True
-            )
+            self.interface = tcp.TCPInterface(hostname=self.host, portNumber=4403, connectNow=True)
             self.logger.debug("[Meshtastic] Connected to Meshtastic device.")
             pub.subscribe(self._on_receive, "meshtastic.receive")
         except Exception as e:
@@ -85,7 +81,7 @@ class MeshtasticClient:
         given its ID.
         """
         try:
-            iface = tcp.TCPInterface(HOSTNAME)
+            iface = tcp.TCPInterface(self.host)
             if iface.nodes:
                 # Iterate through the known nodes in the interface's node database
                 for node_num, node_data in iface.nodes.items():
@@ -115,6 +111,7 @@ class MeshtasticClient:
 
     def _on_receive(self, packet, interface):
         # Check if the packet contains a text message
+        self.logger.debug("[Meshtastic] _on_receive")
         if (
             "decoded" in packet
             and "portnum" in packet["decoded"]
@@ -179,7 +176,7 @@ def build_logger(level: str):
 
 
 def mestastic_callback(callsign, message, logger):
-    logger.debug(f"Callback received: {callsign}: {message}")
+    logger.info(f"Callback received: {callsign}: {message}")
 
 
 def main():
