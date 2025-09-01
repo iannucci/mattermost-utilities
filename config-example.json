@@ -1,0 +1,21 @@
+{
+	"log_level": "INFO",
+	"base_url": "http://FQDN",
+	"hostname": "FQDN",
+	"port": 80,
+	"scheme": "http",
+	"pat": "xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"basepath": "/api/v4",
+	"meshtastic": {
+		"host": "IP-ADDR"
+	},
+	"mattermost": {
+		"host": "FQDN",
+		"token": "xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"scheme": "http",
+		"port": 80,
+		"basepath": "/api/v4",
+		"team": "Team Name",
+		"user": "username"
+	}
+}

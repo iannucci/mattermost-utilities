@@ -124,7 +124,7 @@ class MeshtasticClient:
                 short_name, long_name = self._id_to_name(interface, from_id)
                 callsign = long_name.split()[0].upper()
                 self.logger.debug(f"Received message <{text_message}> from {callsign}")
-                self.callback(callsign, text_message, self.logger)
+                self.callback(callsign, text_message)
 
             except UnicodeDecodeError:
                 self.logger.debug("Received a non-UTF-8 text message.")
@@ -153,6 +153,7 @@ class MattermostClient:
         self.driver = None
         try:
             self.driver = Driver(self.mattermost_login_config)
+            self.driver.login()
         except Exception as e:
             self.logger.error(
                 f"Could not establish a connection to the Mattermost server {self.host}"
@@ -160,7 +161,11 @@ class MattermostClient:
             raise
 
     def close(self):
-        self.driver.close()
+        if self.driver is not None:
+            self.driver.logout()
+
+    def callback(self, callsign, message):
+        self.logger.info(f"[Mattermost] Callback received: {callsign}: {message}")
 
 
 def find_config_path(cli_path: str):
@@ -173,10 +178,6 @@ def find_config_path(cli_path: str):
 def build_logger(level: str):
     logging.basicConfig(level=level, format="%(asctime)s %(levelname)s %(message)s")
     return logging.getLogger("meshtastic-client")
-
-
-def mestastic_callback(callsign, message, logger):
-    logger.info(f"Callback received: {callsign}: {message}")
 
 
 def main():
@@ -195,7 +196,7 @@ def main():
         print(f"Error loading config {config_path}: {e}")
         return
     logger = build_logger(config.get("log_level", "DEBUG"))
-    logger.info("Logging is active")
+    logger.debug("Logging is active")
 
     meshtastic_client = None
     mattermost_client = None
@@ -203,12 +204,12 @@ def main():
     try:
         meshtastic_config = config.get("meshtastic", {})
         mattermost_config = config.get("mattermost", {})
-        meshtastic_client = MeshtasticClient(
-            meshtastic_config.get("host", ""), mestastic_callback, logger
-        )
         mattermost_client = MattermostClient(mattermost_config, logger)
+        meshtastic_client = MeshtasticClient(
+            meshtastic_config.get("host", ""), mattermost_client.callback, logger
+        )
         while True:
-            time.sleep(1)  # Keep the main thread alive
+            time.sleep(1)
     except KeyboardInterrupt:
         logger.info("\nExiting.")
     finally:
