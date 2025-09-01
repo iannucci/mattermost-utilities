@@ -4,7 +4,7 @@ name = "mattermost-utilities"
 version = "0.1.0"
 
 [tool.black]
-line-length = 100  # Default, can be changed
+line-length = 110  # Default, can be changed
 target-version = ['py313'] # Specify Python versions
 include = '\.pyi?$' # Regex for files to include
 exclude = '''

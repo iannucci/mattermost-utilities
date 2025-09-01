@@ -91,7 +91,7 @@ last = ""
 
 # create_user()
 # print_user(get_user_id_by_name(user))
-# cleanup_user(get_user_id_by_name(user), first, last)
+cleanup_user(get_user_id_by_name(user), first, last)
 # print_user(get_user_id_by_name(user))
 
 hoover_channel = {
@@ -180,9 +180,9 @@ def delete_messages_in_channel(
             mattermost_api.posts.delete_post(post_id)
 
 
-delete_messages_in_channel("w6ei", "Local Weather", "Palo Alto ESV")
-delete_messages_in_channel("w6ei", "CalTrans", "Palo Alto ESV")
-delete_messages_in_channel("w6ei", "US Geological Survey", "Palo Alto ESV")
+# delete_messages_in_channel("w6ei", "Local Weather", "Palo Alto ESV")
+# delete_messages_in_channel("w6ei", "CalTrans", "Palo Alto ESV")
+# delete_messages_in_channel("w6ei", "US Geological Survey", "Palo Alto ESV")
 
 
 def lookup_channel_by_name(channel_name, team_name, user_name):
