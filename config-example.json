@@ -11,11 +11,17 @@
 	},
 	"mattermost": {
 		"host": "FQDN",
-		"token": "xxxxxxxxxxxxxxxxxxxxxxxxxxx",
 		"scheme": "http",
 		"port": 80,
 		"basepath": "/api/v4",
-		"team": "Team Name",
-		"user": "username"
+		"admin_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"users": [
+			{
+				"callsign": "aaaa",
+				"team": "xxxxxxxxxxxxxxxx",
+				"channel": "yyyyyyyyyy",
+				"token": "zzzzzzzzzzzzzzzzzzzzzzzzzzz"
+			}
+		]
 	}
 }
