@@ -154,13 +154,6 @@ class MattermostClient:
         self.logger = logger
         self.admin_driver = None
         self.user_driver = None
-        try:
-            self.admin_driver = Driver(self.mattermost_login_config)
-            self.admin_driver.login()
-        except Exception as e:
-            self.logger.error(
-                f"Could not establish a connection to the Mattermost server {self.host} for admin user"
-            )
 
     def close(self):
         if self.user_driver is not None:
@@ -189,6 +182,13 @@ class MattermostClient:
         return team, channel, token
 
     def _get_channel_id_by_name(self, channel_name, team_name, user_name):
+        try:
+            self.admin_driver = Driver(self.mattermost_login_config)
+            self.admin_driver.login()
+        except Exception as e:
+            self.logger.error(
+                f"Could not establish a connection to the Mattermost server {self.host} for the admin user"
+            )
         user_id = self.admin_driver.users.get_user_by_username(user_name).get("id")
         teams = self.admin_driver.teams.get_user_teams(user_id)
         team = next((team for team in teams if team["display_name"] == team_name), None)
@@ -209,6 +209,7 @@ class MattermostClient:
                 f"[Mattermost] Channel {channel_name} not found in team {team_name}."
             )
             return
+        self.close()
         return channel["id"]
 
     def _post(self, callsign, message):
@@ -235,9 +236,7 @@ class MattermostClient:
                 f"Could not establish a connection to the Mattermost server {self.host} for user {callsign}"
             )
         finally:
-            if self.user_driver is not None:
-                self.user_driver.logout()
-                self.user_driver = None
+            self.close()
 
 
 def find_config_path(cli_path: str):
