@@ -75,28 +75,6 @@ class MeshtasticClient:
     def close(self):
         self.interface.close()
 
-    # def _get_long_name_from_id(self, node_id):
-    #     """
-    #     Connects to a Meshtastic device and retrieves the long name of a node
-    #     given its ID.
-    #     """
-    #     try:
-    #         iface = tcp.TCPInterface(self.host)
-    #         if iface.nodes:
-    #             # Iterate through the known nodes in the interface's node database
-    #             for node_num, node_data in iface.nodes.items():
-    #                 # Check if the current node's user ID matches the target node_id
-    #                 if "user" in node_data and node_data["user"]["id"] == node_id:
-    #                     return node_data["user"]["longName"]
-    #         return None  # Return None if the node ID is not found
-
-    #     except Exception as e:
-    #         print(f"Error connecting to Meshtastic device or retrieving data: {e}")
-    #         return None
-    #     finally:
-    #         if "iface" in locals() and iface:
-    #             iface.close()  # Ensure the interface is closed
-
     # Translates a node ID into its short name and long name
     def _id_to_name(self, interface, id):
         short_name = ""

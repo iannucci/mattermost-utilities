@@ -85,22 +85,9 @@ def cleanup_user(user_id, first_name, last_name):
     return mattermost_api.users.update_user(user_id, options=user_data)
 
 
-user = ""
-first = ""
-last = ""
-
-# create_user()
-# print_user(get_user_id_by_name(user))
-cleanup_user(get_user_id_by_name(user), first, last)
-# print_user(get_user_id_by_name(user))
-
 hoover_channel = {
     "team_id": next(
-        (
-            team
-            for team in mattermost_api.teams.get_teams()
-            if team["display_name"] == "Palo Alto ESV"
-        ),
+        (team for team in mattermost_api.teams.get_teams() if team["display_name"] == "Palo Alto ESV"),
         None,
     )["id"],
     "name": "hoover-newsfeed",
@@ -146,9 +133,7 @@ def delete_messages_in_channel(
         print(f"Team {team_name} not found.")
         return
     team_id = team["id"]
-    channels = mattermost_api.channels.get_channels_for_user(
-        get_user_id_by_name(user_name), team_id
-    )
+    channels = mattermost_api.channels.get_channels_for_user(get_user_id_by_name(user_name), team_id)
     if not channels:
         print(f"No channels found for team {team_name} and user {user_name}.")
         return
@@ -165,24 +150,25 @@ def delete_messages_in_channel(
     )
     now_timestamp = int(time.time())
 
-    posts = mattermost_api.posts.get_posts_for_channel(channel_id)["posts"]
-    if not posts:
-        print(f"No more messages found in channel {channel_name}.")
-        return
-    for post_id, post_dict in posts.items():
-        update_at_timestamp = int(post_dict["update_at"] / 1000)
-        age_seconds = now_timestamp - update_at_timestamp
+    page_number = 0
 
-        if age_seconds > age_threshold_seconds:
-            print(
-                f"Deleting post {post_id} in channel {channel_name} because age in seconds ({age_seconds}) exceeds the thresshold ({age_threshold_seconds})."
-            )
-            mattermost_api.posts.delete_post(post_id)
+    while True:
+        posts = mattermost_api.posts.get_posts_for_channel(
+            channel_id, params={"page": page_number, "per_page": 200}
+        )["posts"]
+        if not posts:
+            print(f"No more messages found in channel {channel_name}.")
+            return
+        page_number += 1
+        for post_id, post_dict in posts.items():
+            update_at_timestamp = int(post_dict["update_at"] / 1000)
+            age_seconds = now_timestamp - update_at_timestamp
 
-
-# delete_messages_in_channel("w6ei", "Local Weather", "Palo Alto ESV")
-# delete_messages_in_channel("w6ei", "CalTrans", "Palo Alto ESV")
-# delete_messages_in_channel("w6ei", "US Geological Survey", "Palo Alto ESV")
+            if age_seconds > age_threshold_seconds:
+                print(
+                    f"Deleting post {post_id} in channel {channel_name} because age in seconds ({age_seconds}) exceeds the thresshold ({age_threshold_seconds})."
+                )
+                mattermost_api.posts.delete_post(post_id)
 
 
 def lookup_channel_by_name(channel_name, team_name, user_name):
@@ -192,9 +178,7 @@ def lookup_channel_by_name(channel_name, team_name, user_name):
         print(f"Team {team_name} not found.")
         return
     team_id = team["id"]
-    channels = mattermost_api.channels.get_channels_for_user(
-        get_user_id_by_name(user_name), team_id
-    )
+    channels = mattermost_api.channels.get_channels_for_user(get_user_id_by_name(user_name), team_id)
     if not channels:
         print(f"No channels found for team {team_name}.")
         return
@@ -214,3 +198,16 @@ def lookup_channel_by_name(channel_name, team_name, user_name):
 # print(lookup_channel_by_name('CalTrans', 'Palo Alto ESV', 'hoover'))
 # print(lookup_channel_by_name('US Geological Survey', 'Palo Alto ESV', 'hoover'))
 # print(lookup_channel_by_name('Local Weather', 'Palo Alto ESV', 'hoover'))
+
+user = ""
+first = ""
+last = ""
+
+# create_user()
+# print_user(get_user_id_by_name(user))
+# cleanup_user(get_user_id_by_name(user), first, last)
+# print_user(get_user_id_by_name(user))
+
+delete_messages_in_channel("w6ei", "Local Weather", "Palo Alto ESV")
+delete_messages_in_channel("w6ei", "CalTrans", "Palo Alto ESV")
+delete_messages_in_channel("w6ei", "US Geological Survey", "Palo Alto ESV")
