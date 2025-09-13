@@ -3,7 +3,10 @@ from mattermostdriver import Driver
 import pprint
 import time
 
-AGE_THRESHOLD_SECONDS = 86400
+
+DAY = 86400
+WEEK = 604800
+AGE_THRESHOLD_SECONDS = DAY
 
 file_path = "config.json"
 config_data = {}
@@ -211,3 +214,5 @@ last = ""
 delete_messages_in_channel("w6ei", "Local Weather", "Palo Alto ESV")
 delete_messages_in_channel("w6ei", "CalTrans", "Palo Alto ESV")
 delete_messages_in_channel("w6ei", "US Geological Survey", "Palo Alto ESV")
+delete_messages_in_channel("w6ei", "PulsePoint", "Palo Alto ESV", age_threshold_seconds=WEEK)
+delete_messages_in_channel("w6ei", "National Weather Service", "Palo Alto ESV")
