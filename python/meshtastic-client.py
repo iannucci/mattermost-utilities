@@ -1,3 +1,6 @@
+# Moved to situational-awareness repository on 2025.0917
+
+
 import meshtastic.tcp_interface as tcp
 from mattermostdriver import Driver
 from pubsub import pub  # https://pypubsub.readthedocs.io/en/v4.0.3/

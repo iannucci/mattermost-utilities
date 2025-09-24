@@ -3,7 +3,7 @@ from mattermostdriver import Driver
 import pprint
 import time
 
-
+HOUR = 3600
 DAY = 86400
 WEEK = 604800
 AGE_THRESHOLD_SECONDS = DAY
@@ -169,9 +169,10 @@ def delete_messages_in_channel(
 
             if age_seconds > age_threshold_seconds:
                 print(
-                    f"Deleting post {post_id} in channel {channel_name} because age in seconds ({age_seconds}) exceeds the thresshold ({age_threshold_seconds})."
+                    f"Deleting post {post_id} in channel {channel_name} because age in seconds ({age_seconds}) exceeds the threshold ({age_threshold_seconds})."
                 )
                 mattermost_api.posts.delete_post(post_id)
+        time.sleep(5)
 
 
 def lookup_channel_by_name(channel_name, team_name, user_name):
@@ -211,7 +212,7 @@ last = ""
 # cleanup_user(get_user_id_by_name(user), first, last)
 # print_user(get_user_id_by_name(user))
 
-delete_messages_in_channel("w6ei", "Local Weather", "Palo Alto ESV")
+delete_messages_in_channel("w6ei", "Local Weather", "Palo Alto ESV", age_threshold_seconds=HOUR * 3)
 delete_messages_in_channel("w6ei", "CalTrans", "Palo Alto ESV")
 delete_messages_in_channel("w6ei", "US Geological Survey", "Palo Alto ESV")
 delete_messages_in_channel("w6ei", "PulsePoint", "Palo Alto ESV", age_threshold_seconds=WEEK)
